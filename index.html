@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graphs</title>
+</head>
+<body>
+<script src="assets/js/jquery-3.2.1.min.js"></script>
+<script src="assets/js/Chart.js"></script>
+<div class="chart-container" style="position: relative; height:3vh; width:40vw">
+    <label for="how_many_byte_stream">Ile bitów ma zawierać wejście?</label>
+    <input id="how_many_byte_stream" type="number" value="1">
+    <form id="byte_stream_form" action="#" method="get">
+        <input id="byte_stream" type="hidden" name="byte_stream">
+        <input id="byte_stream_form_submit" type="submit">
+    </form>
+    <canvas id="sinusoid"></canvas>
+    <canvas id="cosinusoid"></canvas>
+    <canvas id="combined"></canvas>
+</div>
+<script>
+    function generateByteStream(howMany) {
+        var outputString = '';
+        for (var i = 0; i < howMany; i++) {
+            outputString += (Math.random() >= 0.5) ? 1 : 0;
+        }
+        return outputString;
+    }
+
+    $('#byte_stream_form_submit').click(function (event) {
+        event.preventDefault();
+        $('#byte_stream').val(generateByteStream($('#how_many_byte_stream').val()));
+        $('#byte_stream_form').submit();
+    });
+
+    var firstArray = [10, 1, 0, -6, -10, -2];
+    var secondArray = [1, 10, -3, -5, -2, 5];
+    var step = 0.1;
+
+    function generateLabels(start, step, array) {
+        var outputArray = [];
+        for (var i = start; outputArray.length <= array.length; i += step) {
+            outputArray.push(i);
+        }
+        return outputArray;
+    }
+
+    function sumArrays(firstArray, secondArray) {
+        var outputArray = [];
+        for (var i = 0; i < firstArray.length && i < secondArray.length; i++) {
+            outputArray.push(firstArray[i] + secondArray[i]);
+        }
+        return outputArray;
+    }
+
+    var sinusoid = document.getElementById("sinusoid").getContext('2d');
+    var cosinusoid = document.getElementById("cosinusoid").getContext('2d');
+    var combined = document.getElementById("combined").getContext('2d');
+
+    var backgroundColor = [
+        'rgba(255, 99, 132, 0.2)',
+        'rgba(54, 162, 235, 0.2)',
+        'rgba(255, 206, 86, 0.2)',
+        'rgba(75, 192, 192, 0.2)',
+        'rgba(153, 102, 255, 0.2)',
+        'rgba(255, 159, 64, 0.2)'
+    ];
+
+    var borderColor = [
+        'rgba(255,99,132,1)',
+        'rgba(54, 162, 235, 1)',
+        'rgba(255, 206, 86, 1)',
+        'rgba(75, 192, 192, 1)',
+        'rgba(153, 102, 255, 1)',
+        'rgba(255, 159, 64, 1)'
+    ];
+
+    var sinusoidChart = new Chart(sinusoid, {
+        type: 'line',
+        data: {
+            labels: generateLabels(0, step, firstArray),
+            datasets: [{
+                label: 'Sinus Plot',
+                data: firstArray,
+                backgroundColor: backgroundColor,
+                borderColor: borderColor,
+                borderWidth: 1,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+    var cosinusoidChart = new Chart(cosinusoid, {
+        type: 'line',
+        data: {
+            labels: generateLabels(0, step, secondArray),
+            datasets: [{
+                label: 'Cossinus plot',
+                data: secondArray,
+                backgroundColor: backgroundColor,
+                borderColor: borderColor,
+                borderWidth: 1,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+    var combinedChart = new Chart(combined, {
+        type: 'line',
+        data: {
+            labels: generateLabels(0, step, sumArrays(firstArray, secondArray)),
+            datasets: [{
+                label: 'Combined plot',
+                data: sumArrays(firstArray, secondArray),
+                backgroundColor: backgroundColor,
+                borderColor: borderColor,
+                borderWidth: 1,
+                fill: false
+            }]
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+
+</script>
+</body>
+</html>
